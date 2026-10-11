@@ -382,6 +382,10 @@ function layoutVoiceLine(
     if (el.kind === "barline" && el.ornaments.some((o) => o.name === "sbf")) {
       advance += m.ink.noteHeight * 1.5;
     }
+    // 曲中转调的行内标签（「1=D」）占数字行的一截，后面的音符要让出来；方框式（「【…】」）在线上方，不占宽
+    if (el.kind === "barline" && el.temporaryKey !== undefined && el.annotation && !el.annotation.startsWith("【")) {
+      advance += m.size.note * (0.45 * [...el.annotation].length + 0.95); // 标签 + 其后一条细小节线
+    }
     // 变音记号写在数字前，得给它让出位置
     if (next?.kind === "note" && next.accidental !== undefined) advance += m.stroke.accidentalSpace;
     // 前倚音也排在数字左边，同样要让位——不让的话倚音会挤在前后两个音符正中间，

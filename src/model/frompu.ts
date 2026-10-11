@@ -69,6 +69,7 @@ function fromPuBarline(el: BarlineElement): Barline {
     b.time = { beats: el.temporaryMeter.numerator, beatType: el.temporaryMeter.denominator };
     if (el.temporaryMeter.parenthesized) b.time.parenthesized = true;
   }
+  if (el.temporaryKey !== undefined) b.keyShift = el.temporaryKey;
   if (el.annotation !== undefined) b.annotation = el.annotation;
   b.source = el.source;
   return b;

@@ -177,6 +177,8 @@ function scanGraceNotes(ctx: Ctx, body: string, columnBase: number): NoteElement
 interface QuotedMeaning {
   chord?: string;
   meter?: Meter;
+  keyShift?: number;
+  keyLabel?: string;
   graceBefore?: NoteElement[];
   graceAfter?: NoteElement[];
   annotation?: string;
@@ -204,6 +206,11 @@ function interpretQuoted(ctx: Ctx, body: string, columnBase: number): QuotedMean
     report(ctx, "bad-temporary-meter", tr("diag.pu.tempMeter", { body }), columnBase, body.length);
     return { annotation: body };
   }
+  const kc = /^k:\s*([#b]?)([1-7])\s*(?:;(.*))?$/i.exec(body);
+  if (kc) {
+    const semi = [0, 0, 2, 4, 5, 7, 9, 11][Number(kc[2])]! + (kc[1] === "#" ? 1 : kc[1] === "b" ? -1 : 0);
+    return { keyShift: semi, keyLabel: kc[3]?.trim() || undefined };
+  }
   const grace = /^(h?yy):\s*/i.exec(body);
   if (grace) {
     const notes = scanGraceNotes(ctx, body.slice(grace[0].length), columnBase + grace[0].length);
@@ -216,6 +223,10 @@ type Attachable = NoteElement | SustainElement | BarlineElement;
 
 function applyQuoted(target: Attachable, q: QuotedMeaning, source: SourceSpan): void {
   if (q.meter !== undefined && target.kind === "barline") target.temporaryMeter = q.meter;
+  if (q.keyShift !== undefined && target.kind === "barline") {
+    target.temporaryKey = q.keyShift;
+    if (q.keyLabel) target.annotation = q.keyLabel;
+  }
   if (q.annotation !== undefined) {
     target.annotation = q.annotation;
     if (target.kind !== "barline") target.annotationSource = source;

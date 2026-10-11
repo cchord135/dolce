@@ -306,6 +306,7 @@ function puBar(b: Barline): BarlineElement {
       parenthesized: b.time.parenthesized ?? false,
     };
   }
+  if (b.keyShift !== undefined) e.temporaryKey = b.keyShift;
   if (b.annotation !== undefined) e.annotation = b.annotation;
   return e;
 }

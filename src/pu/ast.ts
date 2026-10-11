@@ -148,6 +148,8 @@ export interface BarlineElement {
   ornaments: Ornament[];
   /** 小节线注释里的 `p:x/x` 临时拍号 */
   temporaryMeter?: Meter;
+  /** 小节线注释里的 `k:2` 曲中转调：相对主调的半音数（从本小节线之后生效，`k:1` 回主调） */
+  temporaryKey?: number;
   annotation?: string;
   code: string;
   source: SourceSpan;
